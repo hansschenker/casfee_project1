@@ -1,0 +1,34 @@
+    {
+        "notes": [
+            {
+                "id": "01",
+                "finished": true,
+                "title": "Lore Ipsum 1",
+                "content": "1Bla bla bla bla ",
+                "priority": 1,
+                "dateDue": "2016-06-05",
+                "dateEnd": "2016-05-27",
+                "dateCreated": "2016-05-20"
+            },
+            {
+                "id": "02",
+                "finished": false,
+                "title": "Lore Ipsum 2",
+                "content": "2Bla bla bla bla ",
+                "priority": 4,
+                "dateDue": "2016-06-04",
+                "dateEnd": "",
+                "dateCreated": "2016-05-21"
+            },
+            {
+                "id": "03",
+                "finished": false,
+                "title": "Lore Ipsum 3",
+                "content": "3Bla bla bla bla ",
+                "priority": 2,
+                "dateDue": "2016-06-03",
+                "dateEnd": "",
+                "dateCreated": "2016-05-22"
+            }
+        ]
+    }

@@ -1,3 +1,4 @@
+/*
     var notes = [
         {
             "id":"01",
@@ -30,116 +31,132 @@
             "dateCreated":"2016-05-22"
         }
     ];
+*/
 
-    Handlebars.registerHelper('finished_label', function() {
-        finished = (this.finished === true) ? "finished" : "not finished";
-        return new Handlebars.SafeString(finished);
-    });
+var notes = [];
 
-    Handlebars.registerHelper('priority_icons', function() {
-        priority = "";
-        for (p = 0; p < this.priority; p++) {
-            priority+= "<i class=\"fa fa-bolt fa-fw\"></i>";
-        }
-        return new Handlebars.SafeString(priority);
-    });
+$.ajax({
+    dataType: "json",
+    url: '../db/notes.json',
+    data: data,
+    success: function (data) {
+        notes.forEach(function (n) {
+            notes.push(n);
+        });
+    }
+});
 
-    var filter = 'all';
-    var sortby = 'dateDue';
-    var createNotesHtml = Handlebars.compile(document.getElementById("notes-template").innerText);
 
-    function getNotesFiltered() {
-        if (filter == 'all') {
-            return notes;
-        }
-        else {
-            var notesFiltered = [];
-            var indexFiltered = 0;
-            for (i = 0; i < notes.length; i++) {
-                if ( (filter == 'undone') && (notes[i].finished === false) ) {
-                    notesFiltered[indexFiltered] = notes[i];
-                    indexFiltered++;
-                }
-                if ( (filter == 'finished') && (notes[i].finished === true) ) {
-                    notesFiltered[indexFiltered] = notes[i];
-                    indexFiltered++;
-                }
+
+Handlebars.registerHelper('finished_label', function () {
+    finished = (this.finished === true) ? "finished" : "not finished";
+    return new Handlebars.SafeString(finished);
+});
+
+Handlebars.registerHelper('priority_icons', function () {
+    priority = "";
+    for (p = 0; p < this.priority; p++) {
+        priority += "<i class=\"fa fa-bolt fa-fw\"></i>";
+    }
+    return new Handlebars.SafeString(priority);
+});
+
+var filter = 'all';
+var sortby = 'dateDue';
+var createNotesHtml = Handlebars.compile(document.getElementById("notes-template").innerText);
+
+function getNotesFiltered() {
+    if (filter == 'all') {
+        return notes;
+    }
+    else {
+        var notesFiltered = [];
+        var indexFiltered = 0;
+        for (i = 0; i < notes.length; i++) {
+            if ((filter == 'undone') && (notes[i].finished === false)) {
+                notesFiltered[indexFiltered] = notes[i];
+                indexFiltered++;
             }
-            return notesFiltered;
+            if ((filter == 'finished') && (notes[i].finished === true)) {
+                notesFiltered[indexFiltered] = notes[i];
+                indexFiltered++;
+            }
         }
+        return notesFiltered;
     }
+}
 
-    function compareNotesDateDue(s1, s2) {
-        return s1.dateDue < s2.dateDue;
+function compareNotesDateDue(s1, s2) {
+    return s1.dateDue < s2.dateDue;
+}
+
+function compareNotesDateCreated(s1, s2) {
+    return s1.dateCreated < s2.dateCreated;
+}
+
+function compareNotesPriority(s1, s2) {
+    return s1.priority < s2.priority;
+}
+
+function showSortedNotes(sb) {
+    sortby = (sb) ? sb : sortby;
+    switch (sortby) {
+        case 'dateDue':
+            $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesDateDue)));
+            break;
+        case 'dateCreated':
+            $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesDateCreated)));
+            break;
+        case 'priority':
+            $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesPriority)));
+            break;
     }
+}
 
-    function compareNotesDateCreated(s1, s2) {
-        return s1.dateCreated < s2.dateCreated;
-    }
+function renderNotes() {
+    showSortedNotes();
+}
 
-    function compareNotesPriority(s1, s2) {
-        return s1.priority < s2.priority;
-    }
-
-    function showSortedNotes(sb) {
-        sortby = (sb) ? sb : sortby;
-        switch(sortby) {
-            case 'dateDue':
-                $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesDateDue)));
-                break;
-            case 'dateCreated':
-                $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesDateCreated)));
-                break;
-            case 'priority':
-                $("#notes").html(createNotesHtml(getNotesFiltered().sort(compareNotesPriority)));
-                break;
-        }
-    }
-
-    function renderNotes() {
-        showSortedNotes();
-    }
-
-    $(function() {
-        $("#ic-setting").on( "click", function() {
-            $("#header-setting").slideToggle( 500 );
-        });
-
-        $("#btn-finish-date").on( "click", function() {
-            $("#btn-finish-date").addClass( "active" );
-            $("#btn-create-date, #btn-importance" ).removeClass( "active" );
-            showSortedNotes("dateDue");
-        });
-
-        $("#btn-create-date").on( "click", function() {
-            $("#btn-create-date" ).addClass( "active" );
-            $("#btn-finish-date, #btn-importance" ).removeClass( "active" );
-            showSortedNotes("dateCreated");
-        });
-
-        $("#btn-importance").on( "click", function() {
-            $("#btn-importance" ).addClass( "active" );
-            $("#btn-finish-date, #btn-create-date" ).removeClass( "active" );
-            showSortedNotes("priority");
-        });
-
-        $("#btn-finished-tasks").on( "click", function() {
-            $("#btn-finished-tasks" ).addClass( "active" );
-            $("#btn-undone-tasks" ).removeClass( "active" );
-            filter = "finished";
-            showSortedNotes();
-        });
-
-        $("#btn-undone-tasks").on( "click", function() {
-            $("#btn-undone-tasks" ).addClass( "active" );
-            $("#btn-finished-tasks" ).removeClass( "active" );
-            filter = "undone";
-            showSortedNotes();
-        });
-
-        $("#style-switcher").on( "change", function() {
-            $("#pagestyle").attr("href", this.value);
-        });
-
-        renderNotes();
+$(function () {
+    $("#ic-setting").on("click", function () {
+        $("#header-setting").slideToggle(500);
     });
+
+    $("#btn-finish-date").on("click", function () {
+        $("#btn-finish-date").addClass("active");
+        $("#btn-create-date, #btn-importance").removeClass("active");
+        showSortedNotes("dateDue");
+    });
+
+    $("#btn-create-date").on("click", function () {
+        $("#btn-create-date").addClass("active");
+        $("#btn-finish-date, #btn-importance").removeClass("active");
+        showSortedNotes("dateCreated");
+    });
+
+    $("#btn-importance").on("click", function () {
+        $("#btn-importance").addClass("active");
+        $("#btn-finish-date, #btn-create-date").removeClass("active");
+        showSortedNotes("priority");
+    });
+
+    $("#btn-finished-tasks").on("click", function () {
+        $("#btn-finished-tasks").addClass("active");
+        $("#btn-undone-tasks").removeClass("active");
+        filter = "finished";
+        showSortedNotes();
+    });
+
+    $("#btn-undone-tasks").on("click", function () {
+        $("#btn-undone-tasks").addClass("active");
+        $("#btn-finished-tasks").removeClass("active");
+        filter = "undone";
+        showSortedNotes();
+    });
+
+    $("#style-switcher").on("change", function () {
+        $("#pagestyle").attr("href", this.value);
+    });
+
+    renderNotes();
+});

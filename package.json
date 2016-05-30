@@ -1,0 +1,15 @@
+{
+  "name": "casfee_project1-fork",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Hans Schenker <hans.schenker@windowslive.com> (http://www.netxpert.ch/)",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "2.2.4"
+  }
+}
